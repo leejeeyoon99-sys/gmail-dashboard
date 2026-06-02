@@ -340,36 +340,10 @@
 <!-- 별 -->
 <div class="stars" id="stars"></div>
 
-<!-- 로그인 화면 -->
-<div id="loginScreen" style="display:none;position:fixed;inset:0;z-index:99999;background:#1a1a2e;flex-direction:column;align-items:center;justify-content:center;">
-  <div style="font-family:'Press Start 2P',monospace;color:#f8c800;font-size:14px;letter-spacing:3px;margin-bottom:10px;text-shadow:3px 3px 0 #880000;">✉ MAIL DEX</div>
-  <div style="font-family:'Press Start 2P',monospace;color:rgba(255,255,255,.4);font-size:7px;margin-bottom:56px;">YOUR PERSONAL GMAIL DASHBOARD</div>
-  <div style="position:relative;width:200px;height:200px;margin-bottom:48px;filter:drop-shadow(0 12px 32px rgba(0,0,0,.6));">
-    <svg viewBox="0 0 200 200" width="200" height="200">
-      <ellipse cx="100" cy="193" rx="56" ry="9" fill="rgba(0,0,0,.3)"/>
-      <path d="M8 100 A92 92 0 0 0 192 100 Z" fill="#f0f0f0" stroke="#111" stroke-width="5"/>
-      <line x1="8" y1="100" x2="192" y2="100" stroke="#111" stroke-width="7"/>
-      <circle cx="100" cy="100" r="25" fill="#e0e0e0" stroke="#111" stroke-width="5"/>
-      <circle cx="100" cy="100" r="17" fill="#fff" stroke="#ccc" stroke-width="2"/>
-      <path d="M8 100 A92 92 0 0 1 192 100 Z" fill="#cc2200" stroke="#111" stroke-width="5"/>
-      <path d="M38 58 A66 66 0 0 1 100 36" stroke="rgba(255,255,255,.38)" stroke-width="7" fill="none" stroke-linecap="round"/>
-      <line x1="8" y1="100" x2="192" y2="100" stroke="#111" stroke-width="7"/>
-      <circle cx="100" cy="100" r="25" fill="#e0e0e0" stroke="#111" stroke-width="5"/>
-      <circle cx="100" cy="100" r="17" fill="#fff" stroke="#ccc" stroke-width="2"/>
-      <circle cx="94" cy="94" r="5" fill="rgba(255,255,255,.8)"/>
-    </svg>
-  </div>
-  <a href="/api/auth" style="font-family:'Press Start 2P',monospace;font-size:9px;background:#cc2200;color:#f8c800;border:3px solid #111;padding:14px 24px;text-decoration:none;box-shadow:4px 4px 0 #111;display:flex;align-items:center;gap:10px;transition:all .1s;" onmouseover="this.style.transform='translate(-2px,-2px)';this.style.boxShadow='6px 6px 0 #111'" onmouseout="this.style.transform='';this.style.boxShadow='4px 4px 0 #111'">
-    <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#fff" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/><path fill="#f8c800" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z"/><path fill="#fff" d="M3.964 10.707c-.18-.54-.282-1.117-.282-1.707s.102-1.167.282-1.707V4.961H.957C.347 6.175 0 7.55 0 9s.348 2.825.957 4.039l3.007-2.332z"/><path fill="#ea4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.961L3.964 7.293C4.672 5.166 6.656 3.58 9 3.58z"/></svg>
-    LOGIN WITH GOOGLE
-  </a>
-  <div style="font-family:'Press Start 2P',monospace;color:rgba(255,255,255,.3);font-size:7px;margin-top:32px;line-height:2.5;text-align:center;">최근 7일 Gmail 데이터를 분석합니다<br>개인 계정으로 로그인하세요</div>
-</div>
-
 <!-- 인트로 -->
-<div id="intro" onclick="openBall()" style="display:none">
+<div id="intro" onclick="openBall()">
   <div class="intro-title">✉ MAIL DEX</div>
-  <div id="introEmail" class="intro-sub"></div>
+  <div class="intro-sub">leejeeyoon99@gmail.com · 최근 7일</div>
 
   <div class="ball-wrap" id="ballWrap">
     <!-- 빛 터짐 -->
@@ -429,28 +403,28 @@
       <div class="kpi-top" style="background:var(--blue)"></div>
       <span class="kpi-icon">📬</span>
       <div class="kpi-label">총 스레드<br>TOTAL MAIL</div>
-      <div class="kpi-value blue" id="kpiTotal">-</div>
+      <div class="kpi-value blue">15</div>
       <div class="kpi-bar"><div class="kpi-bar-fill hp-blue" style="width:75%"></div></div>
     </div>
     <div class="kpi">
       <div class="kpi-top" style="background:var(--yellow)"></div>
       <span class="kpi-icon">⏳</span>
       <div class="kpi-label">미회신<br>NO REPLY</div>
-      <div class="kpi-value yellow" id="kpiUnreply">-</div>
+      <div class="kpi-value yellow">15</div>
       <div class="kpi-bar"><div class="kpi-bar-fill hp-yellow" style="width:100%"></div></div>
     </div>
     <div class="kpi">
       <div class="kpi-top" style="background:var(--red)"></div>
       <span class="kpi-icon">🚨</span>
       <div class="kpi-label">긴급 (상)<br>URGENT</div>
-      <div class="kpi-value red" id="kpiUrgent">-</div>
+      <div class="kpi-value red">3</div>
       <div class="kpi-bar"><div class="kpi-bar-fill hp-red" style="width:20%"></div></div>
     </div>
     <div class="kpi">
       <div class="kpi-top" style="background:var(--green)"></div>
       <span class="kpi-icon">⭐</span>
       <div class="kpi-label">중요도 8+<br>HIGH SCORE</div>
-      <div class="kpi-value green" id="kpiHigh">-</div>
+      <div class="kpi-value green">3</div>
       <div class="kpi-bar"><div class="kpi-bar-fill hp-green" style="width:20%"></div></div>
     </div>
   </div>
@@ -516,36 +490,12 @@ const DATA = [
   ["2026-05-26 10:22","Genspark","Genspark에 오신 것을 환영합니다 — AI 워크스페이스","서비스가입","하","긍정",3,"미회신","https://mail.google.com/mail/u/0/#inbox/19e61e03bffe154d"],
 ];
 
-// ── 별 생성 ──
+// ── 인트로 ──
 const starsEl = document.getElementById('stars');
 for (let i = 0; i < 70; i++) {
   const s = document.createElement('div'); s.className = 'star';
   s.style.cssText = `left:${Math.random()*100}%;top:${Math.random()*100}%;--dur:${1.5+Math.random()*3}s;--delay:${Math.random()*3}s;width:${Math.random()<.25?4:2}px;height:${Math.random()<.25?4:2}px;`;
   starsEl.appendChild(s);
-}
-
-// ── 로그인 체크 및 데이터 로딩 ──
-let DATA = [];
-async function init() {
-  const res = await fetch('/api/gmail').catch(() => null);
-  if (!res || res.status === 401) {
-    // 비로그인 → 로그인 화면
-    document.getElementById('loginScreen').style.display = 'flex';
-    return;
-  }
-  const json = await res.json();
-  DATA = json.mails || [];
-
-  // 이메일 정보 표시
-  const emailMatch = (DATA[0]?.from || '').match(/<(.+)>/) || [];
-  document.getElementById('introEmail').textContent =
-    (emailMatch[1] || 'Gmail') + ' · 최근 7일';
-  document.getElementById('bNum').textContent = DATA.length;
-
-  // 인트로 표시
-  document.getElementById('intro').style.display = 'flex';
-  initCharts();
-  render();
 }
 
 function openBall() {
@@ -586,13 +536,8 @@ function setF(f) {
 function getRows() {
   const q = document.getElementById('search').value.toLowerCase();
   return DATA.filter(r => {
-    const from = r.from || r[1] || '';
-    const subj = r.subject || r[2] || '';
-    const reply = r.reply || r[7] || '';
-    const urg   = r.urgency || r[4] || '';
-    const score = r.score ?? r[6] ?? 0;
-    const mq = !q || from.toLowerCase().includes(q) || subj.toLowerCase().includes(q);
-    const mf = curF==='전체' || (curF==='미회신'&&reply==='미회신') || (curF==='상'&&urg==='상') || (curF==='8+'&&score>=8);
+    const mq = !q || r[1].toLowerCase().includes(q) || r[2].toLowerCase().includes(q);
+    const mf = curF==='전체' || (curF==='미회신'&&r[7]==='미회신') || (curF==='상'&&r[4]==='상') || (curF==='8+'&&r[6]>=8);
     return mq && mf;
   });
 }
@@ -602,75 +547,49 @@ function render() {
   document.getElementById('cnt').textContent = `[ ${rows.length} ]`;
   const tMap = {'보안알림':'b보안알림','서비스가입':'b서비스가입'};
   document.getElementById('tbody').innerHTML = rows.map(r => {
-    const from  = r.from    || r[1] || '';
-    const subj  = r.subject || r[2] || '';
-    const type  = r.type    || r[3] || '';
-    const urg   = r.urgency || r[4] || '';
-    const sent  = r.sentiment || r[5] || '';
-    const score = r.score   ?? r[6] ?? 0;
-    const reply = r.reply   || r[7] || '';
-    const link  = r.link    || r[8] || '#';
-    const date  = r.date    || r[0] || '';
-    const tc = tMap[type] || 'btype';
-    const sc = score>=8?'sh':score>=6?'sm':'';
-    return `<tr onclick="window.open('${link}','_blank')">
-      <td>${date}</td>
-      <td title="${from}">${from.replace(/<.*?>/g,'').trim().substring(0,14)}</td>
-      <td title="${subj}">${subj.substring(0,38)}</td>
-      <td><span class="badge ${tc}">${type}</span></td>
-      <td><span class="badge b${urg}">${urg}</span></td>
-      <td>${sent}</td>
-      <td class="${sc}">${score}</td>
-      <td><span class="badge b${reply}">${reply}</span></td>
-      <td><a class="link-btn" href="${link}" target="_blank" onclick="event.stopPropagation()">GO ▶</a></td>
+    const tc = tMap[r[3]]||'btype';
+    const sc = r[6]>=8?'sh':r[6]>=6?'sm':'';
+    return `<tr onclick="window.open('${r[8]}','_blank')">
+      <td>${r[0]}</td>
+      <td title="${r[1]}">${r[1].substring(0,14)}</td>
+      <td title="${r[2]}">${r[2].substring(0,38)}</td>
+      <td><span class="badge ${tc}">${r[3]}</span></td>
+      <td><span class="badge b${r[4]}">${r[4]}</span></td>
+      <td>${r[5]}</td>
+      <td class="${sc}">${r[6]}</td>
+      <td><span class="badge b${r[7]}">${r[7]}</span></td>
+      <td><a class="link-btn" href="${r[8]}" target="_blank" onclick="event.stopPropagation()">GO ▶</a></td>
     </tr>`;
   }).join('');
 }
 
 // ── 차트 ──
-let typeChart, urgChart, sentChart;
 const lc='#202020', gc='#ede0b8', pf={family:"'Press Start 2P'",size:8};
+const typeCnt={},urg={상:0,중:0,하:0},sent={긍정:0,중립:0,부정:0};
+DATA.forEach(r=>{typeCnt[r[3]]=(typeCnt[r[3]]||0)+1;urg[r[4]]++;sent[r[5]]++;});
 
-function initCharts() {
-  const typeCnt={},urg={상:0,중:0,하:0},sent={긍정:0,중립:0,부정:0};
-  DATA.forEach(r=>{typeCnt[r[3]||r.type]=(typeCnt[r[3]||r.type]||0)+1;
-    const u=r[4]||r.urgency; if(urg[u]!==undefined)urg[u]++;
-    const s=r[5]||r.sentiment; if(sent[s]!==undefined)sent[s]++;
-  });
+new Chart(document.getElementById('typeChart'),{
+  type:'doughnut',
+  data:{labels:Object.keys(typeCnt),datasets:[{data:Object.values(typeCnt),
+    backgroundColor:['#1a1a2e','#3050c8','#cc2200','#f8c800','#18a818','#5070e8'],
+    borderWidth:3,borderColor:'#202020'}]},
+  options:{plugins:{legend:{labels:{color:lc,font:pf,padding:10,boxWidth:10}}},cutout:'55%'}
+});
+new Chart(document.getElementById('urgChart'),{
+  type:'bar',
+  data:{labels:['상','중','하'],datasets:[{data:[urg.상,urg.중,urg.하],
+    backgroundColor:['#cc2200','#f8c800','#18a818'],borderWidth:3,borderColor:'#202020',borderRadius:0}]},
+  options:{plugins:{legend:{display:false}},
+    scales:{x:{ticks:{color:lc,font:pf},grid:{color:gc}},y:{ticks:{color:lc,font:pf,stepSize:1},grid:{color:gc},beginAtZero:true}}}
+});
+new Chart(document.getElementById('sentChart'),{
+  type:'doughnut',
+  data:{labels:['긍정','중립','부정'],datasets:[{data:[sent.긍정,sent.중립,sent.부정],
+    backgroundColor:['#18a818','#3050c8','#cc2200'],borderWidth:3,borderColor:'#202020'}]},
+  options:{plugins:{legend:{labels:{color:lc,font:pf,padding:10,boxWidth:10}}},cutout:'55%'}
+});
 
-  if(typeChart) typeChart.destroy();
-  if(urgChart)  urgChart.destroy();
-  if(sentChart) sentChart.destroy();
-
-  typeChart = new Chart(document.getElementById('typeChart'),{
-    type:'doughnut',
-    data:{labels:Object.keys(typeCnt),datasets:[{data:Object.values(typeCnt),
-      backgroundColor:['#1a1a2e','#3050c8','#cc2200','#f8c800','#18a818','#5070e8'],
-      borderWidth:3,borderColor:'#202020'}]},
-    options:{plugins:{legend:{labels:{color:lc,font:pf,padding:10,boxWidth:10}}},cutout:'55%'}
-  });
-  urgChart = new Chart(document.getElementById('urgChart'),{
-    type:'bar',
-    data:{labels:['상','중','하'],datasets:[{data:[urg.상,urg.중,urg.하],
-      backgroundColor:['#cc2200','#f8c800','#18a818'],borderWidth:3,borderColor:'#202020',borderRadius:0}]},
-    options:{plugins:{legend:{display:false}},
-      scales:{x:{ticks:{color:lc,font:pf},grid:{color:gc}},y:{ticks:{color:lc,font:pf,stepSize:1},grid:{color:gc},beginAtZero:true}}}
-  });
-  sentChart = new Chart(document.getElementById('sentChart'),{
-    type:'doughnut',
-    data:{labels:['긍정','중립','부정'],datasets:[{data:[sent.긍정,sent.중립,sent.부정],
-      backgroundColor:['#18a818','#3050c8','#cc2200'],borderWidth:3,borderColor:'#202020'}]},
-    options:{plugins:{legend:{labels:{color:lc,font:pf,padding:10,boxWidth:10}}},cutout:'55%'}
-  });
-
-  // KPI 업데이트
-  document.getElementById('kpiTotal').textContent  = DATA.length;
-  document.getElementById('kpiUnreply').textContent = DATA.filter(r=>(r[7]||r.reply)==='미회신').length;
-  document.getElementById('kpiUrgent').textContent  = DATA.filter(r=>(r[4]||r.urgency)==='상').length;
-  document.getElementById('kpiHigh').textContent    = DATA.filter(r=>(r[6]||r.score)>=8).length;
-}
-
-init();
+render();
 </script>
 </body>
 </html>
