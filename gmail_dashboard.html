@@ -513,29 +513,29 @@
       <div class="kpi-top" style="background:var(--blue)"></div>
       <span class="kpi-icon">📬</span>
       <div class="kpi-label">총 스레드<br>TOTAL MAIL</div>
-      <div class="kpi-value blue">15</div>
-      <div class="kpi-bar"><div class="kpi-bar-fill hp-blue" style="width:75%"></div></div>
+      <div class="kpi-value blue" id="kpiTotal">-</div>
+      <div class="kpi-bar"><div class="kpi-bar-fill hp-blue" id="kpiTotalBar" style="width:0%"></div></div>
     </div>
     <div class="kpi">
       <div class="kpi-top" style="background:var(--yellow)"></div>
       <span class="kpi-icon">⏳</span>
       <div class="kpi-label">미회신<br>NO REPLY</div>
-      <div class="kpi-value yellow">15</div>
-      <div class="kpi-bar"><div class="kpi-bar-fill hp-yellow" style="width:100%"></div></div>
+      <div class="kpi-value yellow" id="kpiUnreply">-</div>
+      <div class="kpi-bar"><div class="kpi-bar-fill hp-yellow" id="kpiUnreplyBar" style="width:0%"></div></div>
     </div>
     <div class="kpi">
       <div class="kpi-top" style="background:var(--red)"></div>
       <span class="kpi-icon">🚨</span>
       <div class="kpi-label">긴급 (상)<br>URGENT</div>
-      <div class="kpi-value red">3</div>
-      <div class="kpi-bar"><div class="kpi-bar-fill hp-red" style="width:20%"></div></div>
+      <div class="kpi-value red" id="kpiUrgent">-</div>
+      <div class="kpi-bar"><div class="kpi-bar-fill hp-red" id="kpiUrgentBar" style="width:0%"></div></div>
     </div>
     <div class="kpi">
       <div class="kpi-top" style="background:var(--green)"></div>
       <span class="kpi-icon">⭐</span>
       <div class="kpi-label">중요도 8+<br>HIGH SCORE</div>
-      <div class="kpi-value green">3</div>
-      <div class="kpi-bar"><div class="kpi-bar-fill hp-green" style="width:20%"></div></div>
+      <div class="kpi-value green" id="kpiHigh">-</div>
+      <div class="kpi-bar"><div class="kpi-bar-fill hp-green" id="kpiHighBar" style="width:0%"></div></div>
     </div>
   </div>
 
@@ -736,10 +736,25 @@ function render() {
     </tr>`;
   }).join('');
 
-  // 트레이너 카드 숫자 업데이트
-  document.getElementById('tcTotal').textContent   = DATA.length;
-  document.getElementById('tcUnreply').textContent = DATA.filter(r=>r[7]==='미회신').length;
-  document.getElementById('tcUrgent').textContent  = DATA.filter(r=>r[4]==='상').length;
+  // KPI + 트레이너 카드 숫자 동적 업데이트
+  const total   = DATA.length;
+  const unreply = DATA.filter(r=>r[7]==='미회신').length;
+  const urgent  = DATA.filter(r=>r[4]==='상').length;
+  const high    = DATA.filter(r=>r[6]>=8).length;
+
+  document.getElementById('kpiTotal').textContent   = total;
+  document.getElementById('kpiUnreply').textContent = unreply;
+  document.getElementById('kpiUrgent').textContent  = urgent;
+  document.getElementById('kpiHigh').textContent    = high;
+  document.getElementById('kpiTotalBar').style.width   = '100%';
+  document.getElementById('kpiUnreplyBar').style.width = Math.round(unreply/total*100) + '%';
+  document.getElementById('kpiUrgentBar').style.width  = Math.round(urgent/total*100) + '%';
+  document.getElementById('kpiHighBar').style.width    = Math.round(high/total*100) + '%';
+
+  document.getElementById('tcTotal').textContent   = total;
+  document.getElementById('tcUnreply').textContent = unreply;
+  document.getElementById('tcUrgent').textContent  = urgent;
+  document.getElementById('bNum').textContent       = total;
 }
 
 // ── 차트 ──
