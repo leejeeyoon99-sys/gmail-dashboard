@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>📬 MAIL DEX</title>
+<style>
+  @font-face {
+    font-family: 'Press Start 2P';
+    src: url('PressStart2P.woff2') format('woff2');
+    font-display: block;
+  }
+</style>
+<script src="chart.min.js"></script>
+<style>
+  :root {
+    --cream:   #f8f0d8;
+    --cream2:  #ede0b8;
+    --red:     #cc2200;
+    --red2:    #ff3311;
+    --navy:    #1a1a2e;
+    --blue:    #3050c8;
+    --blue2:   #5070e8;
+    --yellow:  #f8c800;
+    --green:   #18a818;
+    --green2:  #28d828;
+    --white:   #ffffff;
+    --gray:    #888888;
+    --black:   #202020;
+    --shadow:  4px 4px 0px #202020;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  /* ── 인트로 ── */
+  #intro {
+    position: fixed; inset: 0; z-index: 9999;
+    background: #1a1a2e;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    cursor: pointer;
+    transition: opacity .6s ease;
+  }
+  #intro.hide { opacity: 0; pointer-events: none; }
+
+  .stars { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 9998; }
+  .star {
+    position: absolute; width: 2px; height: 2px;
+    background: #fff; border-radius: 50%; opacity: 0;
+    animation: twinkle var(--dur) var(--delay) ease-in-out infinite;
+  }
+
+  .intro-title {
+    font-family: 'Press Start 2P', monospace;
+    color: var(--yellow); font-size: 14px;
+    letter-spacing: 3px; margin-bottom: 8px;
+    text-shadow: 3px 3px 0 #880000;
+    animation: fadeDown .7s ease both;
+  }
+  .intro-sub {
+    font-family: 'Press Start 2P', monospace;
+    color: rgba(255,255,255,.4); font-size: 7px;
+    margin-bottom: 52px;
+    animation: fadeDown .7s .1s ease both;
+  }
+
+  /* ── 몬스터볼 ── */
+  .ball-wrap {
+    position: relative;
+    width: 240px; height: 240px;
+    animation: rock 1.8s ease-in-out infinite, fadeUp .8s .2s ease both;
+    transform-origin: center bottom;
+    cursor: pointer;
+    filter: drop-shadow(0 14px 36px rgba(0,0,0,.65));
+  }
+  .ball-wrap:hover {
+    animation: rockfast .45s ease-in-out infinite;
+    filter: drop-shadow(0 14px 44px rgba(204,34,0,.55));
+  }
+  .ball-wrap.clicked {
+    animation: clickShake .5s ease-in-out forwards !important;
+  }
+
+  /* 볼 중앙 숫자 */
+  .ball-num {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -56%);
+    font-family: 'Press Start 2P', monospace;
+    font-size: 44px; color: var(--navy);
+    z-index: 10; pointer-events: none; line-height: 1;
+    transition: opacity .25s;
+  }
+  .ball-num-label {
+    position: absolute;
+    top: calc(50% + 28px); left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Press Start 2P', monospace;
+    font-size: 8px; color: #555;
+    z-index: 10; pointer-events: none; white-space: nowrap;
+    transition: opacity .25s;
+  }
+
+  /* 볼 열릴 때 빛 */
+  .ball-flash {
+    position: absolute; inset: 0;
+    background: radial-gradient(circle, rgba(255,255,180,1) 0%, rgba(255,220,50,.6) 40%, transparent 65%);
+    border-radius: 50%;
+    opacity: 0; transform: scale(0);
+    transition: opacity .3s, transform .35s;
+    pointer-events: none; z-index: 5;
+  }
+  .ball-wrap.opening .ball-flash { opacity: 1; transform: scale(2.6); }
+
+  /* 뚜껑(위 빨간 반구) */
+  .ball-lid-wrap { position: absolute; inset: 0; perspective: 500px; }
+  .ball-lid {
+    position: absolute; inset: 0;
+    transform-origin: center 50%;
+    transform: rotateX(0deg);
+    transition: transform .55s cubic-bezier(.4,0,.2,1);
+    backface-visibility: hidden;
+  }
+  .ball-wrap.opening .ball-lid { transform: rotateX(-140deg); }
+
+  .intro-press {
+    font-family: 'Press Start 2P', monospace;
+    color: rgba(255,255,255,.55); font-size: 9px;
+    margin-top: 48px; letter-spacing: 2px;
+    animation: blink 1.1s step-end infinite, fadeUp .8s .5s ease both;
+  }
+
+  /* ── 키프레임 ── */
+  @keyframes rock {
+    0%,100% { transform: rotate(0deg); }
+    20%     { transform: rotate(-10deg); }
+    40%     { transform: rotate(10deg); }
+    60%     { transform: rotate(-6deg); }
+    80%     { transform: rotate(6deg); }
+  }
+  @keyframes rockfast {
+    0%,100% { transform: rotate(0deg) scale(1.02); }
+    25%     { transform: rotate(-16deg) scale(1.05); }
+    75%     { transform: rotate(16deg) scale(1.05); }
+  }
+  @keyframes clickShake {
+    0%   { transform: rotate(0deg) scale(1); }
+    15%  { transform: rotate(-20deg) scale(1.05); }
+    30%  { transform: rotate(22deg) scale(1.06); }
+    45%  { transform: rotate(-16deg) scale(1.07); }
+    60%  { transform: rotate(16deg) scale(1.08); }
+    80%  { transform: rotate(-4deg) scale(1.1); }
+    100% { transform: rotate(0deg) scale(1.12); }
+  }
+  @keyframes twinkle {
+    0%,100% { opacity:0; transform:scale(.5); }
+    50%     { opacity:.75; transform:scale(1); }
+  }
+  @keyframes blink { 0%,49%{opacity:1} 50%,100%{opacity:0} }
+  @keyframes fadeDown { from{opacity:0;transform:translateY(-16px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes fadeUp   { from{opacity:0;transform:translateY(16px)}  to{opacity:1;transform:translateY(0)} }
+
+  /* ══════════════════════════════════════
+     대시보드
+  ══════════════════════════════════════ */
+  body {
+    background: var(--cream);
+    background-image:
+      repeating-linear-gradient(0deg, transparent, transparent 31px, rgba(0,0,0,.04) 31px, rgba(0,0,0,.04) 32px),
+      repeating-linear-gradient(90deg, transparent, transparent 31px, rgba(0,0,0,.04) 31px, rgba(0,0,0,.04) 32px);
+    font-family: 'Press Start 2P', monospace;
+    color: var(--black);
+    min-height: 100vh;
+    padding-bottom: 40px;
+  }
+
+  /* 헤더 */
+  .header {
+    background: var(--red);
+    border-bottom: 6px solid #880000;
+    padding: 14px 32px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: relative;
+  }
+  .header::after {
+    content: '';
+    position: absolute; bottom: -12px; left: 0; right: 0; height: 6px;
+    background: var(--navy);
+  }
+  .header-logo {
+    color: var(--yellow); font-size: 16px;
+    text-shadow: 3px 3px 0 #880000;
+    letter-spacing: 2px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .pokeball-sm {
+    width: 30px; height: 30px;
+    background: linear-gradient(180deg, var(--red2) 50%, #fff 50%);
+    border-radius: 50%; border: 3px solid var(--black);
+    position: relative; flex-shrink: 0;
+    box-shadow: 2px 2px 0 var(--black);
+  }
+  .pokeball-sm::before {
+    content: ''; position: absolute; top: 50%; left: 0; right: 0;
+    height: 3px; background: var(--black); transform: translateY(-50%);
+  }
+  .pokeball-sm::after {
+    content: ''; position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%,-50%);
+    width: 9px; height: 9px; background: #fff;
+    border-radius: 50%; border: 2px solid var(--black);
+  }
+  .header-meta { color: rgba(255,255,255,.8); font-size: 7px; text-align: right; line-height: 2.2; }
+
+  /* 네비 */
+  .nav {
+    background: var(--navy); padding: 0 32px;
+    display: flex; border-bottom: 4px solid var(--black);
+  }
+  .nav-btn {
+    font-family: 'Press Start 2P'; font-size: 8px;
+    color: rgba(255,255,255,.55); padding: 14px 16px;
+    border: none; background: transparent; cursor: pointer;
+    border-bottom: 4px solid transparent; margin-bottom: -4px;
+    transition: all .1s;
+  }
+  .nav-btn.active, .nav-btn:hover { color: var(--yellow); border-bottom-color: var(--yellow); }
+
+  .container { max-width: 1200px; margin: 0 auto; padding: 28px 24px; }
+
+  .section-label {
+    font-size: 10px; color: var(--blue); margin-bottom: 16px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .section-label::before { content: '▶'; color: var(--red); }
+
+  /* KPI */
+  .kpi-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin-bottom: 28px; }
+  .kpi {
+    background: var(--white); border: 4px solid var(--black);
+    box-shadow: var(--shadow); padding: 16px 14px 14px;
+    text-align: center; position: relative; overflow: hidden;
+  }
+  .kpi-top { position: absolute; top: 0; left: 0; right: 0; height: 8px; }
+  .kpi-icon { font-size: 26px; margin: 10px 0 8px; display: block; }
+  .kpi-label { font-size: 7px; color: var(--gray); margin-bottom: 10px; line-height: 1.9; }
+  .kpi-value { font-size: 30px; font-weight: 900; line-height: 1; }
+  .kpi-value.blue   { color: var(--blue); }
+  .kpi-value.red    { color: var(--red); }
+  .kpi-value.yellow { color: #c89000; }
+  .kpi-value.green  { color: var(--green); }
+  .kpi-bar { height: 6px; border: 2px solid var(--black); margin-top: 12px; background: var(--cream2); }
+  .kpi-bar-fill { height: 100%; }
+  .hp-blue   { background: var(--blue); }
+  .hp-red    { background: var(--red); }
+  .hp-yellow { background: var(--yellow); }
+  .hp-green  { background: var(--green); }
+
+  /* 차트 */
+  .charts-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 28px; }
+  .chart-card {
+    background: var(--white); border: 4px solid var(--black);
+    box-shadow: var(--shadow); padding: 18px;
+  }
+  .chart-label {
+    font-size: 9px; color: var(--navy); margin-bottom: 14px;
+    padding-bottom: 10px; border-bottom: 3px solid var(--cream2);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .dot { width: 10px; height: 10px; display: inline-block; border: 2px solid var(--black); flex-shrink: 0; }
+  .chart-wrap { position: relative; height: 180px; }
+
+  /* 테이블 */
+  .table-wrap { background: var(--white); border: 4px solid var(--black); box-shadow: var(--shadow); }
+  .table-head {
+    background: var(--navy); padding: 14px 18px;
+    display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;
+  }
+  .table-head .ttl { color: var(--yellow); font-size: 10px; display: flex; align-items: center; gap: 8px; }
+  .controls { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .pixel-input {
+    font-family: 'Press Start 2P'; font-size: 7px;
+    background: var(--cream); border: 3px solid var(--black);
+    color: var(--black); padding: 8px 12px; width: 190px;
+    box-shadow: 2px 2px 0 var(--black); outline: none;
+  }
+  .pixel-input:focus { background: var(--white); }
+  .pbtn {
+    font-family: 'Press Start 2P'; font-size: 7px;
+    background: var(--cream2); border: 3px solid var(--black);
+    color: var(--black); padding: 8px 12px; cursor: pointer;
+    box-shadow: 2px 2px 0 var(--black); transition: all .08s; white-space: nowrap;
+  }
+  .pbtn:hover { background: var(--yellow); transform: translate(-1px,-1px); box-shadow: 3px 3px 0 var(--black); }
+  .pbtn.on { background: var(--blue); color: #fff; box-shadow: 1px 1px 0 var(--black); transform: translate(1px,1px); }
+  #cnt { color: rgba(255,255,255,.65); font-size: 8px; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 8px; }
+  thead th {
+    padding: 11px 10px; text-align: left;
+    background: var(--cream2); border-bottom: 3px solid var(--black);
+    color: var(--navy); white-space: nowrap; font-size: 7px;
+  }
+  tbody tr { border-bottom: 2px solid var(--cream2); cursor: pointer; transition: background .1s; }
+  tbody tr:hover { background: #fff8e0; }
+  tbody td { padding: 11px 10px; max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 7px; line-height: 1.8; }
+
+  .badge {
+    display: inline-block; padding: 3px 7px;
+    border: 2px solid var(--black); font-size: 7px;
+    font-family: 'Press Start 2P'; box-shadow: 1px 1px 0 var(--black);
+  }
+  .b상      { background: var(--red);    color: #fff; }
+  .b중      { background: var(--yellow); color: var(--black); }
+  .b하      { background: var(--green2); color: var(--black); }
+  .b미회신  { background: #f8c800; color: var(--black); }
+  .b회신완료{ background: var(--green2); color: var(--black); }
+  .btype    { background: var(--cream2); color: var(--navy); }
+  .b보안알림  { background: var(--red);   color: #fff; }
+  .b서비스가입{ background: var(--blue2); color: #fff; }
+  .sh { color: var(--red); }
+  .sm { color: #c89000; }
+  .link-btn {
+    font-family: 'Press Start 2P'; font-size: 7px;
+    color: var(--blue); text-decoration: none;
+    border: 2px solid var(--blue); padding: 3px 8px;
+    display: inline-block; box-shadow: 1px 1px 0 var(--black);
+  }
+  .link-btn:hover { background: var(--blue); color: #fff; }
+
+  .footer {
+    background: var(--navy); color: rgba(255,255,255,.45);
+    font-size: 7px; text-align: center; padding: 18px;
+    border-top: 4px solid var(--black); margin-top: 32px; line-height: 2.5;
+  }
+  .cursor { animation: blink 1s step-end infinite; display: inline-block; }
+</style>
+</head>
+<body>
+
+<!-- 별 -->
+<div class="stars" id="stars"></div>
+
+<!-- 인트로 -->
+<div id="intro" onclick="openBall()">
+  <div class="intro-title">✉ MAIL DEX</div>
+  <div class="intro-sub">leejeeyoon99@gmail.com · 최근 7일</div>
+
+  <div class="ball-wrap" id="ballWrap">
+    <!-- 빛 터짐 -->
+    <div class="ball-flash" id="ballFlash"></div>
+
+    <!-- 아래 흰 반구 + 버튼 (고정) -->
+    <svg style="position:absolute;inset:0;z-index:2" viewBox="0 0 240 240" width="240" height="240">
+      <ellipse cx="120" cy="234" rx="68" ry="10" fill="rgba(0,0,0,.3)"/>
+      <path d="M10 120 A110 110 0 0 0 230 120 Z" fill="#f0f0f0" stroke="#111" stroke-width="6"/>
+      <line x1="10" y1="120" x2="230" y2="120" stroke="#111" stroke-width="8"/>
+      <circle cx="120" cy="120" r="30" fill="#e0e0e0" stroke="#111" stroke-width="6"/>
+      <circle cx="120" cy="120" r="20" fill="#ffffff" stroke="#ccc" stroke-width="2"/>
+      <circle cx="113" cy="113" r="6" fill="rgba(255,255,255,.8)"/>
+    </svg>
+
+    <!-- 뚜껑 (위 빨간 반구) -->
+    <div class="ball-lid-wrap">
+      <div class="ball-lid" id="ballLid">
+        <svg style="position:absolute;inset:0" viewBox="0 0 240 240" width="240" height="240">
+          <path d="M10 120 A110 110 0 0 1 230 120 Z" fill="#cc2200" stroke="#111" stroke-width="6"/>
+          <path d="M46 68 A78 78 0 0 1 120 42" stroke="rgba(255,255,255,.38)" stroke-width="9" fill="none" stroke-linecap="round"/>
+          <path d="M36 100 A88 88 0 0 1 56 64" stroke="rgba(255,255,255,.16)" stroke-width="5" fill="none" stroke-linecap="round"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- 숫자 -->
+    <div class="ball-num" id="bNum">15</div>
+    <div class="ball-num-label" id="bLabel">MAILS</div>
+  </div>
+
+  <div class="intro-press">▶ PRESS TO OPEN</div>
+</div>
+
+<!-- 헤더 -->
+<div class="header">
+  <div class="header-logo">
+    <div class="pokeball-sm"></div>
+    MAIL&nbsp;DEX<span class="cursor">_</span>
+  </div>
+  <div class="header-meta">leejeeyoon99@gmail.com<br>2026.05.26 ~ 2026.06.02<br>최근 7일 · 스레드 분석</div>
+</div>
+
+<!-- 네비 -->
+<div class="nav">
+  <button class="nav-btn active">📋 전체현황</button>
+  <button class="nav-btn">⏳ 미회신</button>
+  <button class="nav-btn">🚨 보안알림</button>
+  <button class="nav-btn">🌟 중요도8+</button>
+</div>
+
+<div class="container">
+
+  <div class="section-label">STATUS BOARD</div>
+  <div class="kpi-grid">
+    <div class="kpi">
+      <div class="kpi-top" style="background:var(--blue)"></div>
+      <span class="kpi-icon">📬</span>
+      <div class="kpi-label">총 스레드<br>TOTAL MAIL</div>
+      <div class="kpi-value blue">15</div>
+      <div class="kpi-bar"><div class="kpi-bar-fill hp-blue" style="width:75%"></div></div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-top" style="background:var(--yellow)"></div>
+      <span class="kpi-icon">⏳</span>
+      <div class="kpi-label">미회신<br>NO REPLY</div>
+      <div class="kpi-value yellow">15</div>
+      <div class="kpi-bar"><div class="kpi-bar-fill hp-yellow" style="width:100%"></div></div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-top" style="background:var(--red)"></div>
+      <span class="kpi-icon">🚨</span>
+      <div class="kpi-label">긴급 (상)<br>URGENT</div>
+      <div class="kpi-value red">3</div>
+      <div class="kpi-bar"><div class="kpi-bar-fill hp-red" style="width:20%"></div></div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-top" style="background:var(--green)"></div>
+      <span class="kpi-icon">⭐</span>
+      <div class="kpi-label">중요도 8+<br>HIGH SCORE</div>
+      <div class="kpi-value green">3</div>
+      <div class="kpi-bar"><div class="kpi-bar-fill hp-green" style="width:20%"></div></div>
+    </div>
+  </div>
+
+  <div class="section-label">ANALYSIS</div>
+  <div class="charts-grid">
+    <div class="chart-card">
+      <div class="chart-label"><span class="dot" style="background:var(--blue)"></span>유형별 분포 / TYPE</div>
+      <div class="chart-wrap"><canvas id="typeChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-label"><span class="dot" style="background:var(--red)"></span>긴급도 / URGENCY</div>
+      <div class="chart-wrap"><canvas id="urgChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-label"><span class="dot" style="background:var(--green)"></span>감정 분석 / FEELING</div>
+      <div class="chart-wrap"><canvas id="sentChart"></canvas></div>
+    </div>
+  </div>
+
+  <div class="section-label">MAIL LIST</div>
+  <div class="table-wrap">
+    <div class="table-head">
+      <div class="ttl">📋 INBOX LOG &nbsp;<span id="cnt"></span></div>
+      <div class="controls">
+        <input class="pixel-input" id="search" placeholder="SEARCH..." oninput="render()">
+        <button class="pbtn on"  onclick="setF('전체')">ALL</button>
+        <button class="pbtn"     onclick="setF('미회신')">NO REPLY</button>
+        <button class="pbtn"     onclick="setF('상')">URGENT</button>
+        <button class="pbtn"     onclick="setF('8+')">⭐8+</button>
+      </div>
+    </div>
+    <div style="overflow-x:auto">
+      <table>
+        <thead><tr>
+          <th>DATE</th><th>FROM</th><th>SUBJECT</th><th>TYPE</th>
+          <th>URGENCY</th><th>FEEL</th><th>SCORE</th><th>REPLY</th><th>LINK</th>
+        </tr></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="footer">★ MAIL DEX ★ &nbsp;|&nbsp; Powered by gws CLI + Google Sheets API<br>© 2026 &nbsp;·&nbsp; Press START to refresh</div>
+
+<script>
+const DATA = [
+  ["2026-06-02 10:34","Google Cloud","Google Cloud 무료 체험판에 오신 것을 환영합니다","서비스가입","하","긍정",3,"미회신","https://mail.google.com/mail/u/0/#inbox/19e85f7a1a9f4a2c"],
+  ["2026-06-01 14:43","GitHub","[GitHub] Sudo email verification code","보안알림","상","중립",8,"미회신","https://mail.google.com/mail/u/0/#inbox/19e81b56e4dffde5"],
+  ["2026-06-01 14:06","Vercel","New sign-in detected on your Vercel account","보안알림","상","중립",8,"미회신","https://mail.google.com/mail/u/0/#inbox/19e8193a936442d8"],
+  ["2026-06-01 14:03","GitHub","[GitHub] A third-party GitHub Application has been added","보안알림","상","중립",8,"미회신","https://mail.google.com/mail/u/0/#inbox/19e8190ad635d80e"],
+  ["2026-06-01 12:10","Make","Stuck getting started, 이지윤?","기타","하","중립",5,"미회신","https://mail.google.com/mail/u/0/#inbox/19e81295658eb70b"],
+  ["2026-05-31 12:10","Make","See what others like you are automating 🔥","기타","하","중립",5,"미회신","https://mail.google.com/mail/u/0/#inbox/19e7c02ee2b40b97"],
+  ["2026-05-29 20:03","Google","✅ 지윤님, Google 서비스로 Apple iPhone 설정을 완료하세요","서비스가입","하","긍정",3,"미회신","https://mail.google.com/mail/u/0/#inbox/19e724777df65d72"],
+  ["2026-05-29 12:10","Make","Automate in minutes with ready-made templates ⚡","기타","하","중립",5,"미회신","https://mail.google.com/mail/u/0/#inbox/19e71b639b4a8283"],
+  ["2026-05-29 05:49","Google","보안 알림","보안알림","하","중립",5,"미회신","https://mail.google.com/mail/u/0/#inbox/19e7367a1111c326"],
+  ["2026-05-28 12:10","Make","Not sure where to start? See this tutorial 👉","기타","하","중립",5,"미회신","https://mail.google.com/mail/u/0/#inbox/19e6c8fd6a3a01cc"],
+  ["2026-05-27 15:03","Apify","👋 Welcome to Apify!","서비스가입","하","긍정",3,"미회신","https://mail.google.com/mail/u/0/#inbox/19e6807eeebfdd74"],
+  ["2026-05-27 14:28","Tally Forms","Welcome to Tally, 지윤!","서비스가입","하","긍정",3,"미회신","https://mail.google.com/mail/u/0/#inbox/19e67e7b7028ff47"],
+  ["2026-05-27 12:10","Make","Welcome, 이지윤! Your automation forecast 🌤️","서비스가입","하","긍정",3,"미회신","https://mail.google.com/mail/u/0/#inbox/19e67696cbcc0949"],
+  ["2026-05-27 01:47","Google","보안 알림","보안알림","하","중립",5,"미회신","https://mail.google.com/mail/u/0/#inbox/19e671d918de3fd7"],
+  ["2026-05-26 10:22","Genspark","Genspark에 오신 것을 환영합니다 — AI 워크스페이스","서비스가입","하","긍정",3,"미회신","https://mail.google.com/mail/u/0/#inbox/19e61e03bffe154d"],
+];
+
+// ── 인트로 ──
+const starsEl = document.getElementById('stars');
+for (let i = 0; i < 70; i++) {
+  const s = document.createElement('div'); s.className = 'star';
+  s.style.cssText = `left:${Math.random()*100}%;top:${Math.random()*100}%;--dur:${1.5+Math.random()*3}s;--delay:${Math.random()*3}s;width:${Math.random()<.25?4:2}px;height:${Math.random()<.25?4:2}px;`;
+  starsEl.appendChild(s);
+}
+
+function openBall() {
+  const ball  = document.getElementById('ballWrap');
+  const intro = document.getElementById('intro');
+  const bNum  = document.getElementById('bNum');
+  const bLbl  = document.getElementById('bLabel');
+
+  // 1) 덜덜 흔들기
+  ball.classList.add('clicked');
+
+  // 2) 뚜껑 열림 + 빛
+  setTimeout(() => {
+    ball.classList.remove('clicked');
+    ball.classList.add('opening');
+    bNum.style.opacity = '0';
+    bLbl.style.opacity = '0';
+  }, 520);
+
+  // 3) 페이드아웃
+  setTimeout(() => {
+    intro.classList.add('hide');
+    setTimeout(() => { intro.style.display='none'; starsEl.style.display='none'; }, 650);
+  }, 1000);
+}
+
+// ── 필터 / 테이블 ──
+let curF = '전체';
+function setF(f) {
+  curF = f;
+  document.querySelectorAll('.pbtn').forEach(b => {
+    const map={'ALL':'전체','NO REPLY':'미회신','URGENT':'상','⭐8+':'8+'};
+    b.classList.toggle('on', (map[b.textContent.trim()]||b.textContent.trim()) === f);
+  });
+  render();
+}
+
+function getRows() {
+  const q = document.getElementById('search').value.toLowerCase();
+  return DATA.filter(r => {
+    const mq = !q || r[1].toLowerCase().includes(q) || r[2].toLowerCase().includes(q);
+    const mf = curF==='전체' || (curF==='미회신'&&r[7]==='미회신') || (curF==='상'&&r[4]==='상') || (curF==='8+'&&r[6]>=8);
+    return mq && mf;
+  });
+}
+
+function render() {
+  const rows = getRows();
+  document.getElementById('cnt').textContent = `[ ${rows.length} ]`;
+  const tMap = {'보안알림':'b보안알림','서비스가입':'b서비스가입'};
+  document.getElementById('tbody').innerHTML = rows.map(r => {
+    const tc = tMap[r[3]]||'btype';
+    const sc = r[6]>=8?'sh':r[6]>=6?'sm':'';
+    return `<tr onclick="window.open('${r[8]}','_blank')">
+      <td>${r[0]}</td>
+      <td title="${r[1]}">${r[1].substring(0,14)}</td>
+      <td title="${r[2]}">${r[2].substring(0,38)}</td>
+      <td><span class="badge ${tc}">${r[3]}</span></td>
+      <td><span class="badge b${r[4]}">${r[4]}</span></td>
+      <td>${r[5]}</td>
+      <td class="${sc}">${r[6]}</td>
+      <td><span class="badge b${r[7]}">${r[7]}</span></td>
+      <td><a class="link-btn" href="${r[8]}" target="_blank" onclick="event.stopPropagation()">GO ▶</a></td>
+    </tr>`;
+  }).join('');
+}
+
+// ── 차트 ──
+const lc='#202020', gc='#ede0b8', pf={family:"'Press Start 2P'",size:8};
+const typeCnt={},urg={상:0,중:0,하:0},sent={긍정:0,중립:0,부정:0};
+DATA.forEach(r=>{typeCnt[r[3]]=(typeCnt[r[3]]||0)+1;urg[r[4]]++;sent[r[5]]++;});
+
+new Chart(document.getElementById('typeChart'),{
+  type:'doughnut',
+  data:{labels:Object.keys(typeCnt),datasets:[{data:Object.values(typeCnt),
+    backgroundColor:['#1a1a2e','#3050c8','#cc2200','#f8c800','#18a818','#5070e8'],
+    borderWidth:3,borderColor:'#202020'}]},
+  options:{plugins:{legend:{labels:{color:lc,font:pf,padding:10,boxWidth:10}}},cutout:'55%'}
+});
+new Chart(document.getElementById('urgChart'),{
+  type:'bar',
+  data:{labels:['상','중','하'],datasets:[{data:[urg.상,urg.중,urg.하],
+    backgroundColor:['#cc2200','#f8c800','#18a818'],borderWidth:3,borderColor:'#202020',borderRadius:0}]},
+  options:{plugins:{legend:{display:false}},
+    scales:{x:{ticks:{color:lc,font:pf},grid:{color:gc}},y:{ticks:{color:lc,font:pf,stepSize:1},grid:{color:gc},beginAtZero:true}}}
+});
+new Chart(document.getElementById('sentChart'),{
+  type:'doughnut',
+  data:{labels:['긍정','중립','부정'],datasets:[{data:[sent.긍정,sent.중립,sent.부정],
+    backgroundColor:['#18a818','#3050c8','#cc2200'],borderWidth:3,borderColor:'#202020'}]},
+  options:{plugins:{legend:{labels:{color:lc,font:pf,padding:10,boxWidth:10}}},cutout:'55%'}
+});
+
+render();
+</script>
+</body>
+</html>

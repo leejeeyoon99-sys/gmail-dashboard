@@ -1,0 +1,6 @@
+token.json
+client_secret*.json
+gws_*.json
+*.ps1
+*.enc
+아이디+비번.txt
