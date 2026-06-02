@@ -389,10 +389,10 @@
 
 <!-- 네비 -->
 <div class="nav">
-  <button class="nav-btn active">📋 전체현황</button>
-  <button class="nav-btn">⏳ 미회신</button>
-  <button class="nav-btn">🚨 보안알림</button>
-  <button class="nav-btn">🌟 중요도8+</button>
+  <button class="nav-btn active" onclick="navFilter('전체', this)">📋 전체현황</button>
+  <button class="nav-btn" onclick="navFilter('미회신', this)">⏳ 미회신</button>
+  <button class="nav-btn" onclick="navFilter('보안알림', this)">🚨 보안알림</button>
+  <button class="nav-btn" onclick="navFilter('8+', this)">🌟 중요도8+</button>
 </div>
 
 <div class="container">
@@ -524,6 +524,14 @@ function openBall() {
 
 // ── 필터 / 테이블 ──
 let curF = '전체';
+function navFilter(f, btn) {
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  setF(f);
+  // 테이블 섹션으로 스크롤
+  document.querySelector('.table-wrap').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
 function setF(f) {
   curF = f;
   document.querySelectorAll('.pbtn').forEach(b => {
