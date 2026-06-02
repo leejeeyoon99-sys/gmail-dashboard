@@ -333,6 +333,86 @@
     border-top: 4px solid var(--black); margin-top: 32px; line-height: 2.5;
   }
   .cursor { animation: blink 1s step-end infinite; display: inline-block; }
+
+  /* ── 픽셀 파티클 ── */
+  .particle {
+    position: fixed; width: 8px; height: 8px;
+    pointer-events: none; z-index: 99998;
+    animation: particleFly var(--dur) ease-out forwards;
+  }
+  @keyframes particleFly {
+    0%   { transform: translate(0,0) rotate(0deg); opacity: 1; }
+    100% { transform: translate(var(--tx), var(--ty)) rotate(720deg); opacity: 0; }
+  }
+
+  /* ── 트레이너 카드 ── */
+  .trainer-card {
+    background: var(--navy); border: 4px solid var(--black);
+    box-shadow: var(--shadow); padding: 16px;
+    display: flex; align-items: center; gap: 16px;
+    margin-bottom: 28px; position: relative; overflow: hidden;
+  }
+  .trainer-card::before {
+    content: ''; position: absolute; top: 0; right: 0;
+    width: 120px; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,.03));
+  }
+  .trainer-sprite {
+    font-size: 48px; flex-shrink: 0;
+    animation: trainerBob 2s ease-in-out infinite;
+  }
+  @keyframes trainerBob {
+    0%,100% { transform: translateY(0); }
+    50%     { transform: translateY(-4px); }
+  }
+  .trainer-info { flex: 1; }
+  .trainer-name { color: var(--yellow); font-size: 10px; margin-bottom: 8px; }
+  .trainer-stat { color: rgba(255,255,255,.6); font-size: 7px; line-height: 2.2; }
+  .trainer-badge-row { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+  .trainer-badge {
+    font-size: 16px; background: var(--black); border: 2px solid var(--yellow);
+    width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+    animation: badgeSpin 0s; transition: transform .2s;
+  }
+  .trainer-badge:hover { transform: scale(1.3) rotate(15deg); }
+  .trainer-id { color: rgba(255,255,255,.3); font-size: 7px; text-align: right; }
+
+  /* ── 긴급 행 흔들림 ── */
+  @keyframes rowShake {
+    0%,100% { transform: translateX(0); }
+    20%     { transform: translateX(-3px); }
+    40%     { transform: translateX(3px); }
+    60%     { transform: translateX(-2px); }
+    80%     { transform: translateX(2px); }
+  }
+  .urgent-row { animation: rowShake 1.5s ease-in-out infinite; }
+  .urgent-row td:first-child::before { content: '⚠ '; }
+
+  /* ── 타이핑 텍스트 박스 ── */
+  .type-box {
+    position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%);
+    background: var(--cream); border: 4px solid var(--black);
+    box-shadow: 6px 6px 0 var(--black);
+    padding: 14px 20px; font-size: 9px; color: var(--black);
+    z-index: 99999; min-width: 280px; text-align: center;
+    display: none; line-height: 2;
+  }
+  .type-box::after {
+    content: '▼'; position: absolute; bottom: 6px; right: 12px;
+    font-size: 8px; animation: blink .7s step-end infinite;
+  }
+
+  /* ── 콤보 카운터 ── */
+  .combo {
+    position: fixed; top: 80px; right: 20px; z-index: 9000;
+    font-size: 9px; color: var(--yellow);
+    text-shadow: 2px 2px 0 var(--black);
+    pointer-events: none; opacity: 0;
+    transition: opacity .3s;
+    text-align: center;
+  }
+  .combo.show { opacity: 1; }
+  .combo-num { font-size: 22px; display: block; }
 </style>
 </head>
 <body>
@@ -375,8 +455,17 @@
     <div class="ball-num-label" id="bLabel">MAILS</div>
   </div>
 
-  <div class="intro-press">▶ PRESS TO OPEN</div>
+  <div class="intro-press" id="introPress">▶ PRESS TO OPEN</div>
 </div>
+
+<!-- 콤보 카운터 -->
+<div class="combo" id="combo">
+  <span class="combo-num" id="comboNum">0</span>
+  COMBO!
+</div>
+
+<!-- 텍스트 박스 -->
+<div class="type-box" id="typeBox"></div>
 
 <!-- 헤더 -->
 <div class="header">
@@ -396,6 +485,27 @@
 </div>
 
 <div class="container">
+
+  <!-- 트레이너 카드 -->
+  <div class="trainer-card">
+    <div class="trainer-sprite" id="trainerSprite">🧑‍💻</div>
+    <div class="trainer-info">
+      <div class="trainer-name">TRAINER: LEEJEEYOON</div>
+      <div class="trainer-stat">
+        MAILS CAUGHT : <span id="tcTotal">15</span><br>
+        NO REPLY     : <span id="tcUnreply">15</span><br>
+        URGENT       : <span id="tcUrgent">3</span>
+      </div>
+      <div class="trainer-badge-row">
+        <div class="trainer-badge" title="Mail Master">📬</div>
+        <div class="trainer-badge" title="Security Guard">🛡️</div>
+        <div class="trainer-badge" title="Speed Reader">⚡</div>
+        <div class="trainer-badge" title="Inbox Zero">🏆</div>
+        <div class="trainer-badge" title="7-Day Streak">🔥</div>
+      </div>
+    </div>
+    <div class="trainer-id">No.007<br>MAIL&nbsp;DEX</div>
+  </div>
 
   <div class="section-label">STATUS BOARD</div>
   <div class="kpi-grid">
@@ -490,6 +600,64 @@ const DATA = [
   ["2026-05-26 10:22","Genspark","Genspark에 오신 것을 환영합니다 — AI 워크스페이스","서비스가입","하","긍정",3,"미회신","https://mail.google.com/mail/u/0/#inbox/19e61e03bffe154d"],
 ];
 
+// ── 8비트 효과음 ──
+const AC = new (window.AudioContext || window.webkitAudioContext)();
+function beep(freq, dur, type='square', vol=0.08) {
+  try {
+    const o = AC.createOscillator(), g = AC.createGain();
+    o.connect(g); g.connect(AC.destination);
+    o.type = type; o.frequency.value = freq;
+    g.gain.setValueAtTime(vol, AC.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, AC.currentTime + dur);
+    o.start(); o.stop(AC.currentTime + dur);
+  } catch(e) {}
+}
+function sfxClick()  { beep(880,.05); setTimeout(()=>beep(1100,.05),60); }
+function sfxOpen()   { [523,659,784,1047].forEach((f,i)=>setTimeout(()=>beep(f,.12,'square',.1),i*80)); }
+function sfxCombo()  { beep(1047,.05); setTimeout(()=>beep(1319,.05),60); setTimeout(()=>beep(1568,.1),120); }
+
+// ── 픽셀 파티클 ──
+function spawnParticles(x, y) {
+  const colors = ['#cc2200','#f8c800','#3050c8','#18a818','#ff6644','#ffffff'];
+  for (let i = 0; i < 28; i++) {
+    const p = document.createElement('div'); p.className = 'particle';
+    const angle = (i / 28) * 360, dist = 80 + Math.random() * 130;
+    const tx = Math.cos(angle*Math.PI/180)*dist, ty = Math.sin(angle*Math.PI/180)*dist - 60;
+    const dur = 0.5 + Math.random() * 0.6;
+    p.style.cssText = `left:${x}px;top:${y}px;background:${colors[i%colors.length]};--tx:${tx}px;--ty:${ty}px;--dur:${dur}s;`;
+    document.body.appendChild(p);
+    setTimeout(() => p.remove(), dur*1000);
+  }
+}
+
+// ── 타이핑 텍스트 박스 ──
+let typeTimer;
+function showTypeBox(msg, duration=2800) {
+  const box = document.getElementById('typeBox');
+  box.style.display = 'block'; box.textContent = '';
+  clearTimeout(typeTimer);
+  let i = 0;
+  const iv = setInterval(() => {
+    box.textContent += msg[i++];
+    if (i >= msg.length) { clearInterval(iv); typeTimer = setTimeout(()=>{ box.style.display='none'; }, duration); }
+  }, 38);
+}
+
+// ── 콤보 카운터 ──
+let comboCount = 0, comboTimer;
+function triggerCombo() {
+  comboCount++;
+  document.getElementById('comboNum').textContent = comboCount;
+  document.getElementById('combo').classList.add('show');
+  clearTimeout(comboTimer);
+  comboTimer = setTimeout(() => { document.getElementById('combo').classList.remove('show'); comboCount = 0; }, 2000);
+  if (comboCount >= 3) sfxCombo();
+}
+
+// ── 트레이너 스프라이트 랜덤 ──
+const sprites = ['🧑‍💻','👩‍💻','🧙','🦸','🥷','👾','🤖'];
+document.getElementById('trainerSprite').textContent = sprites[Math.floor(Math.random()*sprites.length)];
+
 // ── 인트로 ──
 const starsEl = document.getElementById('stars');
 for (let i = 0; i < 70; i++) {
@@ -499,37 +667,45 @@ for (let i = 0; i < 70; i++) {
 }
 
 function openBall() {
+  AC.resume(); // 모바일 AudioContext 활성화
+  sfxClick();
   const ball  = document.getElementById('ballWrap');
   const intro = document.getElementById('intro');
   const bNum  = document.getElementById('bNum');
   const bLbl  = document.getElementById('bLabel');
 
-  // 1) 덜덜 흔들기
   ball.classList.add('clicked');
 
-  // 2) 뚜껑 열림 + 빛
   setTimeout(() => {
     ball.classList.remove('clicked');
     ball.classList.add('opening');
     bNum.style.opacity = '0';
     bLbl.style.opacity = '0';
+    sfxOpen();
+    // 파티클 폭발 (볼 중앙 기준)
+    const r = ball.getBoundingClientRect();
+    spawnParticles(r.left + r.width/2, r.top + r.height/2);
   }, 520);
 
-  // 3) 페이드아웃
   setTimeout(() => {
     intro.classList.add('hide');
-    setTimeout(() => { intro.style.display='none'; starsEl.style.display='none'; }, 650);
+    setTimeout(() => {
+      intro.style.display='none'; starsEl.style.display='none';
+      showTypeBox('WILD MAIL APPEARED!  15 threads detected in your inbox!');
+    }, 650);
   }, 1000);
 }
 
 // ── 필터 / 테이블 ──
 let curF = '전체';
 function navFilter(f, btn) {
+  sfxClick();
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   setF(f);
-  // 테이블 섹션으로 스크롤
   document.querySelector('.table-wrap').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  const msgs = { '미회신':'CHECKING UNREPLIED MAILS...', '보안알림':'WARNING! SECURITY ALERTS DETECTED!', '8+':'HIGH PRIORITY MAILS FOUND!', '전체':'SHOWING ALL MAILS.' };
+  if (msgs[f]) showTypeBox(msgs[f], 1800);
 }
 
 function setF(f) {
@@ -545,7 +721,7 @@ function getRows() {
   const q = document.getElementById('search').value.toLowerCase();
   return DATA.filter(r => {
     const mq = !q || r[1].toLowerCase().includes(q) || r[2].toLowerCase().includes(q);
-    const mf = curF==='전체' || (curF==='미회신'&&r[7]==='미회신') || (curF==='상'&&r[4]==='상') || (curF==='8+'&&r[6]>=8);
+    const mf = curF==='전체' || (curF==='미회신'&&r[7]==='미회신') || (curF==='보안알림'&&r[3]==='보안알림') || (curF==='상'&&r[4]==='상') || (curF==='8+'&&r[6]>=8);
     return mq && mf;
   });
 }
@@ -557,7 +733,8 @@ function render() {
   document.getElementById('tbody').innerHTML = rows.map(r => {
     const tc = tMap[r[3]]||'btype';
     const sc = r[6]>=8?'sh':r[6]>=6?'sm':'';
-    return `<tr onclick="window.open('${r[8]}','_blank')">
+    const isUrgent = r[4]==='상';
+    return `<tr class="${isUrgent?'urgent-row':''}" onclick="sfxClick();triggerCombo();window.open('${r[8]}','_blank')">
       <td>${r[0]}</td>
       <td title="${r[1]}">${r[1].substring(0,14)}</td>
       <td title="${r[2]}">${r[2].substring(0,38)}</td>
@@ -569,6 +746,11 @@ function render() {
       <td><a class="link-btn" href="${r[8]}" target="_blank" onclick="event.stopPropagation()">GO ▶</a></td>
     </tr>`;
   }).join('');
+
+  // 트레이너 카드 숫자 업데이트
+  document.getElementById('tcTotal').textContent   = DATA.length;
+  document.getElementById('tcUnreply').textContent = DATA.filter(r=>r[7]==='미회신').length;
+  document.getElementById('tcUrgent').textContent  = DATA.filter(r=>r[4]==='상').length;
 }
 
 // ── 차트 ──
